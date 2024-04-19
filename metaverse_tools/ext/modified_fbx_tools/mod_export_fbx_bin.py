@@ -39,6 +39,7 @@ from mathutils import Vector, Matrix
 
 import io_scene_fbx
 from io_scene_fbx import encode_bin, data_types, fbx_utils
+
 from io_scene_fbx.fbx_utils import (
     # Constants.
     FBX_VERSION, 
@@ -48,8 +49,6 @@ from io_scene_fbx.fbx_utils import (
     PerfMon,
     units_blender_to_fbx_factor,
     similar_values, similar_values_iter,
-    # Mesh transform helpers.
-    vcos_transformed_gen,
     # UUID from key.
     get_fbx_uuid_from_key,
     # Key generators.
@@ -117,7 +116,10 @@ from io_scene_fbx.export_fbx_bin import (
 from metaverse_tools.utils.helpers.materials import HifiShaderWrapper
 # Save fbx_objects_elements, save_single, save
 
-
+def vcos_transformed_gen(raw_cos, m=None):
+    # Note: we could most likely get much better performances with numpy, but will leave this as TODO for now.
+    gen = zip(*(iter(raw_cos),) * 3)
+    return gen if m is None else (m @ Vector(v) for v in gen)
 
 # Mapping Blender -> FBX (principled_socket_name, fbx_name).
 HIFI_SPECIFIC_SOCKETS_FBX = (
